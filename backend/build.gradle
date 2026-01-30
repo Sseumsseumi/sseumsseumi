@@ -37,3 +37,12 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('copyPrivate', Copy) {
+	copy {
+		from './config/back'
+		include "*.yml"
+		include ".env"
+		into './backend/src/main/resources'
+	}
+}
