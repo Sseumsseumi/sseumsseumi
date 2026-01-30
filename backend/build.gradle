@@ -39,6 +39,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+//서브모듈 설정
+processResources {
+    dependsOn tasks.copyPrivate
+}
+
 tasks.register('copyPrivate', Copy) {
 	copy {
 		from './config/back'
