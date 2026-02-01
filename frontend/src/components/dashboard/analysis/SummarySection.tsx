@@ -1,4 +1,4 @@
-import AnalysisCard from "./AnalysisCard";
+import AnalysisCard from "../common/DashboardCard";
 
 const SummarySection = () => {
   return (
