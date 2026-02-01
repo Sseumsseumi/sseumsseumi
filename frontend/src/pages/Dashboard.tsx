@@ -1,6 +1,6 @@
 import Layout from "../components/layout/Layout";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import AnalysisSummary from "../components/dashboard/AnalysisSummary";
+import LeftDashboard from "../components/dashboard/analysis/LeftDashboard";
 import RecentTransactions from "../components/transactions/RecentTransactions";
 import { transactions } from "../data/transactions";
 
@@ -8,16 +8,8 @@ const Dashboard = () => {
   return (
     <Layout>
       <DashboardLayout
-        left={
-          <>
-            <AnalysisSummary />
-          </>
-        }
-        right={
-          <>
-            <RecentTransactions transactions={transactions} />
-          </>
-        }
+        left={<LeftDashboard />}
+        right={<RecentTransactions transactions={transactions} />}
       />
     </Layout>
   );
