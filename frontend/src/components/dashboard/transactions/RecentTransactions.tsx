@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import type { Transaction } from "../../types/transaction";
+import type { Transaction } from "../../../types/transaction";
 import TransactionTable from "./TransactionTable";
 
 interface Props {

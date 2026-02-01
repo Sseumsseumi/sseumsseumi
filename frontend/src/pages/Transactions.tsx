@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "../components/layout/Layout";
-import TransactionTable from "../components/transactions/TransactionTable";
+import TransactionTable from "../components/dashboard/transactions/TransactionTable";
 import { transactions } from "../data/transactions";
 
 const Transactions = () => {
