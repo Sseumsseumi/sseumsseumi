@@ -1,13 +1,11 @@
 FROM node:lts-alpine as builder
+
 WORKDIR /front
 
 ENV PATH /front/node_modules/.bin:$PATH
 COPY package.json /front/package.json
-
 RUN npm install
 COPY . ./
 
-EXPOSE 3000
-
-# 애플리케이션 실행
-CMD ["npm", "run", "dev", "--", "--host"]
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

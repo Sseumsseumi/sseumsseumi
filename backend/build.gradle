@@ -40,15 +40,15 @@ tasks.named('test') {
 }
 
 //서브모듈 설정
-processResources {
-    dependsOn tasks.copyPrivate
-}
-
 tasks.register('copyPrivate', Copy) {
 	copy {
-		from './config/back'
+		from '../config/back'
 		include "*.yml"
 		include ".env"
-		into './backend/src/main/resources'
+		into 'src/main/resources'
 	}
+}
+
+processResources {
+	dependsOn tasks.copyPrivate
 }
