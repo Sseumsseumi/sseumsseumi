@@ -37,7 +37,7 @@ services:
       - sseumsseumi-network
   
   redis:
-    image: redis:alpine
+    image: vlwli99/redis
     container_name: redis
     ports:
       - "6379:6379"

@@ -204,7 +204,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "docker compose up -d"
+                    sh "docker compose --env-file .env up -d"
                 }
             }
         }
