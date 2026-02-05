@@ -9,15 +9,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone Repository') {
-            when {
-                anyOf {
-                    changeset "**/backend/**"
-                    changeset "**/frontend/**"
-                    changeset "**/nginx/**"
-                    changeset "docker-compose.yml"
-                }
-            }
+        stage('Checkout') {
             steps {
                 checkout scm
             }
