@@ -218,7 +218,6 @@ pipeline {
         }
     }
     
-    //이후 단계
     post {
         always {
             sh 'docker logout || true'
