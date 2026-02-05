@@ -162,7 +162,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "docker-compose pull"
+                    sh "docker compose pull"
                 }
             }
         }
@@ -179,10 +179,10 @@ pipeline {
             steps {
                 script {
                     echo "Bringing down containers..."
-                    sh "docker-compose down --remove-orphans --volumes || true"
+                    sh "docker compose down --remove-orphans --volumes || true"
 
                     echo "Forcing container stop and removal..."
-                    sh "docker-compose rm -fsv || true"
+                    sh "docker compose rm -fsv || true"
 
                     echo "Cleaning up unused Docker resources..."
                     retry(3) {
@@ -204,7 +204,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "docker-compose up -d"
+                    sh "docker compose up -d"
                 }
             }
         }
