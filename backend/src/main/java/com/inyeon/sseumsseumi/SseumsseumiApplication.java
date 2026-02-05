@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SseumsseumiApplication {
+	//주석
 	public static void main(String[] args) {
 		SpringApplication.run(SseumsseumiApplication.class, args);
 	}
