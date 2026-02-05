@@ -1,39 +1,27 @@
-FROM jenkins/jenkins:lts-jdk17
-
+FROM jenkins/jenkins:jdk17
 USER root
 
-# 필수 패키지 설치
-RUN apt-get update && apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NOWARNINGS="yes"
+
+RUN apt-get -y update &&\
+    apt-get install -y --no-install-recommends \
     vim \
-    && rm -rf /var/lib/apt/lists/*
+    apt-utils
 
-# Node.js 18 LTS 설치
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get update && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get install ca-certificates curl gnupg lsb-release -y
 
-# Docker CLI 설치
-RUN apt-get update && \
-    apt-get install -y \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y docker-ce-cli && \
-    apt-get clean
+RUN mkdir -p /etc/apt/keyrings &&\
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg &&\
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null &&\
+    apt-get -y update
 
-# docker 그룹 추가
-RUN groupadd -g 988 docker || true && \
+RUN apt-get install docker-ce docker-ce-cli containerd.io docker-compose docker-compose-plugin -y
+
+RUN if [ -e /var/run/docker.sock ]; then chown jenkins:jenkins /var/run/docker.sock; fi &&\
     usermod -aG docker jenkins
+
+RUN apt install sudo
 
 USER jenkins
