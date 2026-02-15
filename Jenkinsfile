@@ -12,7 +12,35 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scmGit(
+                        branches: [[name: '*/develop']],
+                        extensions: [submodule(parentCredentials: true, recursiveSubmodules: true, trackingSubmodules: true)],
+                        userRemoteConfigs: [[credentialsId: 'github-token-access', url: 'https://github.com/Sseumsseumi/sseumsseumi']]
+                )
+            }
+        }
+
+        stage('Move Config Files') {
+            steps {
+                sh '''
+                    echo "=== 워크스페이스 루트 확인 ==="
+                    ls -al
+
+                    echo "=== config 폴더 확인 ==="
+                    ls -al config/
+
+                    echo "=== application.yml 복사 ==="
+                    cp config/application.yml backend/src/main/resources/application.yml
+
+                    echo "=== 복사 결과 확인 ==="
+                    ls -al backend/src/main/resources/
+
+                    echo "=== .env 복사 ==="
+                    cp config/.env .env
+
+                    echo "=== .env 복사 결과 ==="
+                    ls -al .env
+                '''
             }
         }
         
@@ -75,33 +103,29 @@ pipeline {
                     // 빌드 전 캐시 정리
                     sh "docker builder prune -f || true"
 
-                    // Backend 이미지 빌드
-                    if (sh(script: "git diff HEAD~1 --name-only | grep '^backend/'", returnStatus: true) == 0) {
+                    def changedFiles = sh(
+                        script: "git diff --name-only \${GIT_PREVIOUS_COMMIT} \${GIT_COMMIT} 2>/dev/null || git diff HEAD~1 --name-only 2>/dev/null || echo ''",
+                        returnStdout: true
+                    ).trim()
+
+                    if (changedFiles.contains('backend/')) {
                         dir("./backend") {
                             sh "docker build -t ${BACKEND_IMAGE}:latest ."
                         }
-                        // 빌드 직후 메모리 확인
                         sh "free -h"
                     }
-                    
-                    // Frontend 이미지 빌드
-                    if (sh(script: "git diff HEAD~1 --name-only | grep '^frontend/'", returnStatus: true) == 0) {
+                    if (changedFiles.contains('frontend/')) {
                         dir("./frontend") {
                             sh "docker build -t ${FRONTEND_IMAGE}:latest ."
                         }
-                        // 빌드 직후 메모리 확인
                         sh "free -h"
                     }
-                    
-                    // Nginx 이미지 빌드
-                    if (sh(script: "git diff HEAD~1 --name-only | grep '^nginx/'", returnStatus: true) == 0) {
+                    if (changedFiles.contains('nginx/')) {
                         dir("./nginx") {
                             sh "docker build -t ${NGINX_IMAGE}:latest ."
                         }
                     }
-
-                    // Redis 이미지 빌드
-                    if (sh(script: "git diff HEAD~1 --name-only | grep '^redis/'", returnStatus: true) == 0) {
+                    if (changedFiles.contains('redis/')) {
                         dir("./redis") {
                             sh "docker build -t ${REDIS_IMAGE}:latest ."
                         }
@@ -225,7 +249,7 @@ pipeline {
             steps {
                 script {
                     echo "Bringing down containers..."
-                    
+
                     // 명시적으로 모든 컨테이너 중지 및 제거
                     sh """
                         docker stop nginx frontend backend redis || true
