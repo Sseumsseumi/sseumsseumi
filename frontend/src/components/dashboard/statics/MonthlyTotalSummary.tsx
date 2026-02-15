@@ -7,19 +7,40 @@ interface Props {
 const MonthlyTotalSummary = ({ transactions }: Props) => {
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth(); // 0-based
+  const currentMonth = now.getMonth();
 
-  const totalExpense = transactions
+  // 이번 달 지출
+  const currentMonthTotal = transactions
     .filter((tx) => {
       if (tx.type !== "OUT") return false;
-
-      const txDate = new Date(tx.date);
+      const date = new Date(tx.date);
       return (
-        txDate.getFullYear() === currentYear &&
-        txDate.getMonth() === currentMonth
+        date.getFullYear() === currentYear &&
+        date.getMonth() === currentMonth
       );
     })
     .reduce((sum, tx) => sum + tx.amount, 0);
+
+  // 전월
+  const prevMonthDate = new Date(currentYear, currentMonth - 1, 1);
+  const prevYear = prevMonthDate.getFullYear();
+  const prevMonth = prevMonthDate.getMonth();
+
+  const prevMonthTotal = transactions
+    .filter((tx) => {
+      if (tx.type !== "OUT") return false;
+      const date = new Date(tx.date);
+      return (
+        date.getFullYear() === prevYear &&
+        date.getMonth() === prevMonth
+      );
+    })
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
+  // 지출 차이 금액
+  const diffAmount = currentMonthTotal - prevMonthTotal;
+
+  const isIncrease = diffAmount > 0;
 
   return (
     <section
@@ -38,11 +59,15 @@ const MonthlyTotalSummary = ({ transactions }: Props) => {
           margin: "12px 0",
         }}
       >
-        {totalExpense.toLocaleString()}원
+        {currentMonthTotal.toLocaleString()}원
       </p>
 
       <p style={{ color: "#6b7280" }}>
-        전월 대비 <strong style={{ color: "#ef4444" }}>blank</strong>
+        전월 대비{" "}
+        <strong style={{ color: isIncrease ? "#ef4444" : "#22c55e" }}>
+          {isIncrease ? "+" : "-"}
+          {Math.abs(diffAmount).toLocaleString()}원
+        </strong>
       </p>
     </section>
   );
