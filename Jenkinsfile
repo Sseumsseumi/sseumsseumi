@@ -3,6 +3,7 @@ pipeline {
         BACKEND_IMAGE = "vlwli99/backend"
         FRONTEND_IMAGE = "vlwli99/frontend"
         NGINX_IMAGE = "vlwli99/nginx"
+        REDIS_IMAGE = "vlwli99/redis"
         dockerImage = ''
     }
 
@@ -45,6 +46,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                 }
             }
             steps {
@@ -69,6 +71,13 @@ pipeline {
                             sh "docker build -t ${NGINX_IMAGE}:latest ."
                         }
                     }
+
+                    // Redis 이미지 빌드
+                    if (sh(script: "git diff HEAD~1 --name-only | grep '^redis/'", returnStatus: true) == 0) {
+                        dir("./redis") {
+                            sh "docker build -t ${REDIS_IMAGE}:latest ."
+                        }
+                    }
                 }
             }
         }
@@ -79,6 +88,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                 }
             }
             steps {
@@ -100,6 +110,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                 }
             }
             steps {
@@ -116,6 +127,10 @@ pipeline {
                     if (sh(script: "git diff HEAD~1 --name-only | grep '^nginx/'", returnStatus: true) == 0) {
                         sh "docker push ${NGINX_IMAGE}:latest"
                     }
+
+                    if (sh(script: "git diff HEAD~1 --name-only | grep '^redis/'", returnStatus: true) == 0) {
+                        sh "docker push ${REDIS_IMAGE}:latest"
+                    }
                 }
             }
         }
@@ -126,6 +141,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                 }
             }
             steps {
@@ -134,7 +150,7 @@ pipeline {
                         "vlwli99/backend",
                         "vlwli99/frontend",
                         "vlwli99/nginx",
-                        "redis:alpine"
+                        "vlwli99/redis"
                     ]
 
                     imageNames.each { imageName ->
@@ -157,6 +173,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                     changeset "docker-compose.yml"
                 }
             }
@@ -173,6 +190,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                     changeset "docker-compose.yml"
                 }
             }
@@ -199,6 +217,7 @@ pipeline {
                     changeset "**/backend/**"
                     changeset "**/frontend/**"
                     changeset "**/nginx/**"
+                    changeset "**/redis/**"
                     changeset "docker-compose.yml"
                 }
             }
