@@ -5,8 +5,20 @@ interface Props {
 }
 
 const MonthlyTotalSummary = ({ transactions }: Props) => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-based
+
   const totalExpense = transactions
-    .filter((tx) => tx.type === "OUT")
+    .filter((tx) => {
+      if (tx.type !== "OUT") return false;
+
+      const txDate = new Date(tx.date);
+      return (
+        txDate.getFullYear() === currentYear &&
+        txDate.getMonth() === currentMonth
+      );
+    })
     .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
@@ -30,7 +42,7 @@ const MonthlyTotalSummary = ({ transactions }: Props) => {
       </p>
 
       <p style={{ color: "#6b7280" }}>
-        전월 대비 <strong style={{ color: "#ef4444" }}>+12%</strong>
+        전월 대비 <strong style={{ color: "#ef4444" }}>blank</strong>
       </p>
     </section>
   );

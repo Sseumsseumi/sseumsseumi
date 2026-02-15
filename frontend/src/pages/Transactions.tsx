@@ -3,8 +3,13 @@ import Layout from "../components/layout/Layout";
 import TransactionTable from "../components/dashboard/transactions/TransactionTable";
 import { transactions } from "../data/transactions";
 
+const getCurrentMonth = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+};
+
 const Transactions = () => {
-  const [month, setMonth] = useState("2026-01");
+  const [month, setMonth] = useState(getCurrentMonth());
 
   const filtered = transactions.filter((tx) =>
     tx.date.startsWith(month)
