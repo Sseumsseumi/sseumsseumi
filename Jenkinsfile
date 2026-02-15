@@ -18,21 +18,9 @@ pipeline {
             steps {
                 checkout scmGit(
                         branches: [[name: '*/develop']],
-                        extensions: [submodule(parentCredentials: true, recursiveSubmodules: true, trackingSubmodules: true)],
+                        extensions: [submodule(parentCredentials: true, reference: '', trackingSubmodules: true)],
                         userRemoteConfigs: [[credentialsId: 'github-token-access', url: 'https://github.com/Sseumsseumi/sseumsseumi']]
                 )
-                
-                sh '''
-                    echo "=== 서브모듈 강제 초기화 ==="
-                    git submodule sync --recursive
-                    git submodule update --init --recursive
-
-                    echo "=== 서브모듈 상태 ==="
-                    git submodule status
-
-                    echo "=== config 내용 확인 ==="
-                    ls -al config/
-                '''
             }
         }
 
