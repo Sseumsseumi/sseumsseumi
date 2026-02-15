@@ -33,12 +33,6 @@ pipeline {
                     echo "=== config 폴더 확인 ==="
                     ls -al config/
 
-                    echo "=== application.yml 복사 ==="
-                    cp config/back/application.yml backend/src/main/resources/application.yml
-
-                    echo "=== 복사 결과 확인 ==="
-                    ls -al backend/src/main/resources/
-
                     echo "=== .env 복사 ==="
                     cp config/back/.env .env
 
