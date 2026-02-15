@@ -3,23 +3,16 @@ import { getMonthlyCategoryTotals } from "../../../utils/categoryStats";
 
 interface Props {
   transactions: Transaction[];
-  year?: number;
-  month?: number;
+  year: number;
+  month: number;
 }
 
-const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
-  const resolvedYear = year ?? new Date().getFullYear();
-  const resolvedMonth = month ?? new Date().getMonth() + 1;
+const CategoryStatsTable = ({ transactions, year, month }: Props) => {
+  if (!year || !month) return null;
 
-  const totals = getMonthlyCategoryTotals(
-    transactions,
-    resolvedYear,
-    resolvedMonth
-  );
+  const totals = getMonthlyCategoryTotals(transactions, year, month);
 
-  const top3 = Object.entries(totals)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+  const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]);
 
   return (
     <section
@@ -29,15 +22,15 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
         borderRadius: "12px",
       }}
     >
-      <h3>{resolvedMonth}월 카테고리별 지출 TOP 3</h3>
+      <h3>{month}월 카테고리별 지출 내역</h3>
 
-      {top3.length === 0 ? (
+      {rows.length === 0 ? (
         <p style={{ color: "#6b7280", marginTop: "12px" }}>
-          이번 달 지출 내역이 없습니다.
+          지출 내역이 없습니다.
         </p>
       ) : (
         <ul style={{ marginTop: "12px" }}>
-          {top3.map(([category, amount]) => (
+          {rows.map(([category, amount]) => (
             <li
               key={category}
               style={{
@@ -56,4 +49,4 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
   );
 };
 
-export default CategoryStatsSummary;
+export default CategoryStatsTable;
