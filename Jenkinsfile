@@ -5,6 +5,7 @@ pipeline {
         NGINX_IMAGE = "vlwli99/nginx"
         REDIS_IMAGE = "vlwli99/redis"
         dockerImage = ''
+        COMPOSE_FILE = "/home/ubuntu/docker-compose.yml"
     }
 
     agent any
@@ -16,6 +17,27 @@ pipeline {
             }
         }
         
+        // 빌드 전 메모리 확보
+        stage('Stop Containers Before Build') {
+            when {
+                anyOf {
+                    changeset "**/backend/**"
+                    changeset "**/frontend/**"
+                    changeset "**/nginx/**"
+                    changeset "**/redis/**"
+                }
+            }
+            steps {
+                sh """
+                    echo "=== 메모리 확보를 위해 컨테이너 중지 ==="
+                    docker compose -f ${COMPOSE_FILE} stop || true
+                    
+                    echo "=== 빌드 전 메모리 상태 ==="
+                    free -h
+                """
+            }
+        }
+
         stage('Build Backend') {
             when {
                 changeset "**/backend/**"
@@ -51,11 +73,16 @@ pipeline {
             }
             steps {
                 script {
+                    // 빌드 전 캐시 정리
+                    sh "docker builder prune -f || true"
+
                     // Backend 이미지 빌드
                     if (sh(script: "git diff HEAD~1 --name-only | grep '^backend/'", returnStatus: true) == 0) {
                         dir("./backend") {
                             sh "docker build -t ${BACKEND_IMAGE}:latest ."
                         }
+                        // 빌드 직후 메모리 확인
+                        sh "free -h"
                     }
                     
                     // Frontend 이미지 빌드
@@ -63,6 +90,8 @@ pipeline {
                         dir("./frontend") {
                             sh "docker build -t ${FRONTEND_IMAGE}:latest ."
                         }
+                        // 빌드 직후 메모리 확인
+                        sh "free -h"
                     }
                     
                     // Nginx 이미지 빌드
@@ -203,10 +232,7 @@ pipeline {
                     sh "docker compose rm -fsv || true"
 
                     echo "Cleaning up unused Docker resources..."
-                    retry(3) {
-                        sleep time: 10, unit: 'SECONDS'
-                        sh "docker system prune -af --volumes || true"
-                    }
+                    sh "docker image prune -f"
                 }
             }
         }
