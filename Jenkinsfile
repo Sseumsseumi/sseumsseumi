@@ -30,13 +30,13 @@ pipeline {
                     ls -al config/
 
                     echo "=== application.yml 복사 ==="
-                    cp config/application.yml backend/src/main/resources/application.yml
+                    cp config/back/application.yml backend/src/main/resources/application.yml
 
                     echo "=== 복사 결과 확인 ==="
                     ls -al backend/src/main/resources/
 
                     echo "=== .env 복사 ==="
-                    cp config/.env .env
+                    cp config/back/.env .env
 
                     echo "=== .env 복사 결과 ==="
                     ls -al .env
