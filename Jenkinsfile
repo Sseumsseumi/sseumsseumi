@@ -5,7 +5,6 @@ pipeline {
         NGINX_IMAGE = "vlwli99/nginx"
         REDIS_IMAGE = "vlwli99/redis"
         dockerImage = ''
-        COMPOSE_FILE = "/home/ubuntu/docker-compose.yml"
     }
 
     agent any
@@ -30,7 +29,7 @@ pipeline {
             steps {
                 sh """
                     echo "=== 메모리 확보를 위해 컨테이너 중지 ==="
-                    docker compose -f ${COMPOSE_FILE} stop || true
+                    docker stop nginx frontend backend redis || true
                     
                     echo "=== 빌드 전 메모리 상태 ==="
                     free -h
