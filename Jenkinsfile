@@ -225,10 +225,12 @@ pipeline {
             steps {
                 script {
                     echo "Bringing down containers..."
-                    sh "docker compose down --remove-orphans --volumes || true"
-
-                    echo "Forcing container stop and removal..."
-                    sh "docker compose rm -fsv || true"
+                    
+                    // 명시적으로 모든 컨테이너 중지 및 제거
+                    sh """
+                        docker stop nginx frontend backend redis || true
+                        docker rm nginx frontend backend redis || true
+                    """
 
                     echo "Cleaning up unused Docker resources..."
                     sh "docker image prune -f"
