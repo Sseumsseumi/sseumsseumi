@@ -7,6 +7,8 @@ interface Props {
   month?: number;
 }
 
+const COLORS = ["#F26076", "#FF9760", "#FFD150"];
+
 const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
   const resolvedYear = year ?? new Date().getFullYear();
   const resolvedMonth = month ?? new Date().getMonth() + 1;
@@ -17,9 +19,11 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
     resolvedMonth
   );
 
-  const top3 = Object.entries(totals)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+  const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+
+  const top3 = entries.slice(0, 3);
+
+  const totalAmount = entries.reduce((sum, [, amount]) => sum + amount, 0);
 
   return (
     <section
@@ -36,21 +40,53 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
           이번 달 지출 내역이 없습니다.
         </p>
       ) : (
-        <ul style={{ marginTop: "12px" }}>
-          {top3.map(([category, amount]) => (
-            <li
-              key={category}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "8px",
-              }}
-            >
-              <span>{category}</span>
-              <strong>{amount.toLocaleString()}원</strong>
-            </li>
-          ))}
-        </ul>
+        <div style={{ marginTop: "16px" }}>
+          {top3.map(([category, amount], index) => {
+            const percentage =
+              totalAmount === 0 ? 0 : (amount / totalAmount) * 100;
+
+            return (
+              <div key={category} style={{ marginBottom: "14px" }}>
+                {/* 라벨 */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "6px",
+                    fontSize: "14px",
+                  }}
+                >
+                  <span>{category}</span>
+                  <span>
+                    {amount.toLocaleString()}원 ·{" "}
+                    {percentage.toFixed(1)}%
+                  </span>
+                </div>
+
+                {/* 가로 막대 */}
+                <div
+                  style={{
+                    width: "100%",
+                    height: "10px",
+                    backgroundColor: "#E5E7EB",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${percentage}%`,
+                      height: "100%",
+                      backgroundColor: COLORS[index] ?? "#E5E7EB",
+                      borderRadius: "6px",
+                      transition: "width 0.3s",
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </section>
   );
