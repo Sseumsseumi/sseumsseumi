@@ -11,7 +11,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableRedisRepositories
+@EnableRedisRepositories(basePackages={"com.inyeon.sseumsseumi.security.repository"})
 public class RedisConfig {
     @Value("${spring.data.redis.host}")
     private String host;
