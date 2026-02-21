@@ -5,7 +5,7 @@ const Sidebar = () => {
     <aside
       style={{
         width: "220px",
-        background: "#111827",
+        background: "#FFD41D",
         color: "#fff",
         padding: "24px 16px",
         display: "flex",
@@ -25,6 +25,10 @@ const Sidebar = () => {
 
       <NavLink to="/login" style={{ color: "#fff", textDecoration: "none" }}>
         로그인
+      </NavLink>
+
+      <NavLink to="/signup" style={{ color: "#fff", textDecoration: "none" }}>
+        회원가입
       </NavLink>
     </aside>
   );
