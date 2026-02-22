@@ -9,7 +9,7 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum UserErrorCode {
-    NOT_EXISTS_USER("아이디 혹은 비밀번호가 일치하지 않습니다.", UNAUTHORIZED),
+    NOT_EXISTS_USER("존재하지 않는 회원 입니다.", UNAUTHORIZED),
     ALREADY_IN_ID("이미 존재하는 아이디 입니다.", BAD_REQUEST),
     TRANSACTION_FAIL("트랜젝션에 실패했습니다.", BAD_REQUEST);
 
