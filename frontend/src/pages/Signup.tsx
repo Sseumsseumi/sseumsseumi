@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axiosClient from "../api/axiosClient";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -19,7 +20,6 @@ const Signup = () => {
     return true;
   };
 
-  // 비밀번호: 8~16자, 대/소문자 + 숫자 + 특수문자
   const validatePassword = (
     pw: string,
     confirm: string
@@ -43,9 +43,9 @@ const Signup = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log("click!") // Test 
     const isUserIdValid = validateUserId(userId);
     const isPasswordValid = validatePassword(
       password,
@@ -54,12 +54,26 @@ const Signup = () => {
 
     if (!isUserIdValid || !isPasswordValid) return;
 
-    // 회원가입 성공 확인
-    console.log("회원가입 성공", {
-      name,
-      userId,
-      password,
-    });
+    try {
+      const res = await axiosClient.post("user/regist", {
+        id: userId,
+        password,
+        name,
+      });
+
+      console.log("회원가입 성공", res.data); // Test
+      alert("성공"); // Test
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.dataHeader?.resultMessage;
+
+      if (message) {
+        setUserIdError(message);
+      } else {
+        alert("실패"); // Test
+        console.error("회원가입 실패", error); //Test
+      }
+    }
   };
 
   return (
@@ -107,7 +121,6 @@ const Signup = () => {
         />
         {userIdError && <p style={errorStyle}>{userIdError}</p>}
 
-        {/* 비밀번호 */}
         <label style={labelStyle}>비밀번호</label>
         <input
           type="password"

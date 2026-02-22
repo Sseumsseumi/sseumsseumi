@@ -1,17 +1,34 @@
 import { useState } from "react";
+import axiosClient from "../api/axiosClient";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError("");
 
-    // 로그인 성공 여부 확인용
-    console.log("로그인 시도", {
-      userId,
-      password,
-    });
+    try {
+      await axiosClient.post("/auth/login", {
+        id: userId,
+        password,
+      });
+
+      console.log("로그인 성공");
+      // TODO: 메인 페이지 이동
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.dataHeader?.resultMessage;
+
+      if (message) {
+        setLoginError(message);
+      } else {
+        setLoginError("로그인 중 오류가 발생했습니다.");
+        console.error(error);
+      }
+    }
   };
 
   return (
@@ -58,6 +75,10 @@ const Login = () => {
           style={inputStyle}
         />
 
+        {loginError && (
+          <p style={errorStyle}>{loginError}</p>
+        )}
+
         <button
           type="submit"
           style={{
@@ -92,6 +113,13 @@ const inputStyle: React.CSSProperties = {
   borderRadius: "8px",
   border: "1px solid #d1d5db",
   outline: "none",
+};
+
+const errorStyle: React.CSSProperties = {
+  marginTop: "12px",
+  color: "#ef4444",
+  fontSize: "14px",
+  textAlign: "center",
 };
 
 export default Login;
