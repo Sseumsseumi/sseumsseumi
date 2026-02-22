@@ -21,12 +21,14 @@ public class RegistUserRequest {
             message = "INVALID_LOGIN_ID_FORMAT"
     )
     private String id;
+
     @NotNull
     @Pattern( //대소문자 + 숫자 + 특수문자 (8~16자)
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+]).{8,16}$",
             message = "INVALID_PASSWORD_FORMAT"
     )
     private String password;
+
     @NotNull
     private String name;
 

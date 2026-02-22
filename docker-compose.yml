@@ -30,6 +30,8 @@ services:
     environment:
       - AWSRDS_PASSWORD=${AWSRDS_PASSWORD}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_ACCESS=${JWT_ACCESS}
+      - JWT_REFRESH=${JWT_REFRESH}
     ports:
       - "8080:8080"
     depends_on:
