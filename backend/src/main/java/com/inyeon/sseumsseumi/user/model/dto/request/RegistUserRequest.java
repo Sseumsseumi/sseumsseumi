@@ -16,13 +16,13 @@ import jakarta.validation.constraints.Pattern;
 @Builder
 public class RegistUserRequest {
     @NotNull
-    @Pattern(
+    @Pattern( //영어 + 숫자 (4~20자)
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,20}$",
             message = "INVALID_LOGIN_ID_FORMAT"
     )
     private String id;
     @NotNull
-    @Pattern(
+    @Pattern( //대소문자 + 숫자 + 특수문자 (8~16자)
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+]).{8,16}$",
             message = "INVALID_PASSWORD_FORMAT"
     )
