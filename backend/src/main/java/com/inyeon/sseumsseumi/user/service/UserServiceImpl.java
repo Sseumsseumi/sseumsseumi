@@ -1,5 +1,6 @@
 package com.inyeon.sseumsseumi.user.service;
 
+import com.inyeon.sseumsseumi.security.exception.AuthException;
 import com.inyeon.sseumsseumi.user.exception.UserException;
 import com.inyeon.sseumsseumi.user.model.dto.request.RegistUserRequest;
 import com.inyeon.sseumsseumi.user.model.entity.User;
@@ -9,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.inyeon.sseumsseumi.security.exception.AuthErrorCode.LOGIN_FAILED;
 import static com.inyeon.sseumsseumi.user.exception.UserErrorCode.ALREADY_IN_ID;
-import static com.inyeon.sseumsseumi.user.exception.UserErrorCode.NOT_EXISTS_USER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +35,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByLoginId(String id) {
-        return userRepository.findByLoginId(id).orElseThrow(()->new UserException(NOT_EXISTS_USER));
+        return userRepository.findByLoginId(id).orElseThrow(()->new AuthException(LOGIN_FAILED));
     }
 }

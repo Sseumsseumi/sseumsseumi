@@ -9,7 +9,7 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @AllArgsConstructor
 public enum AuthErrorCode {
-    NOT_EXISTS("유효하지 않은 정보입니다.", UNAUTHORIZED);
+    LOGIN_FAILED("아이디 또는 비밀번호가 일치하지 않습니다.", UNAUTHORIZED);
 
     private final String message;
     private final HttpStatus httpStatus;

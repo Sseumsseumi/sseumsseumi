@@ -15,7 +15,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.inyeon.sseumsseumi.security.exception.AuthErrorCode.NOT_EXISTS;
+import static com.inyeon.sseumsseumi.security.exception.AuthErrorCode.LOGIN_FAILED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
             return;
         }
-        throw new AuthException(NOT_EXISTS);
+        throw new AuthException(LOGIN_FAILED);
     }
 
     @Override
