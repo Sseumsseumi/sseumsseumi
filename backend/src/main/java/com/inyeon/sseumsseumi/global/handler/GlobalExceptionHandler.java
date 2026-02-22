@@ -2,9 +2,12 @@ package com.inyeon.sseumsseumi.global.handler;
 
 import com.inyeon.sseumsseumi.global.utils.MessageUtils;
 import com.inyeon.sseumsseumi.security.exception.AuthException;
+import com.inyeon.sseumsseumi.user.exception.UserErrorCode;
 import com.inyeon.sseumsseumi.user.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -42,6 +45,30 @@ public class GlobalExceptionHandler {
                 .body(MessageUtils.fail(
                         e.getErrorCode().name(),
                         e.getErrorCode().getMessage()
+                ));
+    }
+
+    /**
+     * UserRegisterException 처리
+     * - 아이디, 비밀번호 형식 예외
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<MessageUtils> handleValidationException(
+            MethodArgumentNotValidException ex) {
+
+        String errorCodeName = ex.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
+
+        UserErrorCode errorCode = UserErrorCode.valueOf(errorCodeName);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(MessageUtils.fail(
+                        errorCode.name(),
+                        errorCode.getMessage()
                 ));
     }
 

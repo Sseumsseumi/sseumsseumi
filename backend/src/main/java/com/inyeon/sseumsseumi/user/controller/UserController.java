@@ -3,6 +3,7 @@ package com.inyeon.sseumsseumi.user.controller;
 import com.inyeon.sseumsseumi.global.utils.MessageUtils;
 import com.inyeon.sseumsseumi.user.model.dto.request.RegistUserRequest;
 import com.inyeon.sseumsseumi.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/regist")
-    public ResponseEntity<MessageUtils> registUser(@RequestBody RegistUserRequest registUserRequest){
+    public ResponseEntity<MessageUtils> registUser(@Valid @RequestBody RegistUserRequest registUserRequest){
         userService.registUser(registUserRequest);
         return ResponseEntity.ok().body(MessageUtils.success());
     }
