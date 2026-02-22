@@ -35,6 +35,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Spring Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 	// JWT
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // 핵심 JWT 인터페이스 & 빌더 API
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.6' // 실제 JWT 구현체
