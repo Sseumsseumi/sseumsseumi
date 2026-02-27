@@ -1,9 +1,11 @@
 package com.inyeon.sseumsseumi.security.utils;
 
+import com.inyeon.sseumsseumi.security.exception.JwtException;
 import com.inyeon.sseumsseumi.security.config.JwtProperties;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.inyeon.sseumsseumi.security.exception.JwtErrorCode;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,5 +80,105 @@ public class JwtUtil {
                 .expiration(getExpireDate(jwtProperties.getRefreshTime()))
                 .signWith(refreshSecretKey)
                 .compact();
+    }
+
+    /**
+     * 액세스 토큰 검증
+     * @param token
+     * @return
+     */
+    public Claims validateAccessToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(accessSecretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.EXPIRED_TOKEN);
+        } catch (SignatureException e) {
+            log.warn("잘못된 AccessToken 서명: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_SIGNATURE);
+        } catch (MalformedJwtException e) {
+            log.warn("손상된 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            log.warn("지원하지 않는 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.UNSUPPORTED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            log.warn("빈 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_TOKEN_FORMAT);
+        }
+    }
+
+    /**
+     * 리프레쉬 토큰 검증
+     * @param token
+     * @return
+     */
+    public Claims validateRefreshToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(refreshSecretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.EXPIRED_TOKEN);
+        } catch (SignatureException e) {
+            log.warn("잘못된 AccessToken 서명: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_SIGNATURE);
+        } catch (MalformedJwtException e) {
+            log.warn("손상된 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
+        } catch (UnsupportedJwtException e) {
+            log.warn("지원하지 않는 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.UNSUPPORTED_TOKEN);
+        } catch (IllegalArgumentException e) {
+            log.warn("빈 AccessToken: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_TOKEN_FORMAT);
+        }
+    }
+
+    /**
+     * 액세스 토큰에서 사용자 ID 추출
+     * @param token
+     * @return
+     */
+    public Long getUserIdFromAccessToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(accessSecretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return Long.valueOf(claims.getSubject());
+        } catch (Exception e) {
+            log.error("AccessToken에서 userId 추출 실패: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_TOKEN_FORMAT);
+        }
+    }
+
+    /**
+     * 리프레쉬 토큰에서 사용자 ID 추출
+     * @param token
+     * @return
+     */
+    public Long getUserIdFromRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(refreshSecretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return Long.valueOf(claims.getSubject());
+        } catch (Exception e) {
+            log.error("RefreshToken에서 userId 추출 실패: {}", e.getMessage());
+            throw new JwtException(JwtErrorCode.INVALID_TOKEN_FORMAT);
+        }
     }
 }

@@ -3,10 +3,10 @@ package com.inyeon.sseumsseumi.security.exception;
 import lombok.Getter;
 
 @Getter
-public class AuthException extends RuntimeException{
-    private final AuthErrorCode errorCode;
+public class JwtException extends RuntimeException {
+    private final JwtErrorCode errorCode;
 
-    public AuthException(AuthErrorCode errorCode){
+    public JwtException(JwtErrorCode errorCode){
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }

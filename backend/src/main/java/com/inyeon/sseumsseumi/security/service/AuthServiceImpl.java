@@ -8,6 +8,8 @@ import com.inyeon.sseumsseumi.security.service.interfaces.AuthService;
 import com.inyeon.sseumsseumi.security.service.interfaces.TokenService;
 import com.inyeon.sseumsseumi.user.model.entity.User;
 import com.inyeon.sseumsseumi.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +62,43 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout() {
+    public void logout(User user, HttpServletRequest request, HttpServletResponse response) {
+        //1. Cookie에서 AccessToken, RefreshToken 가져오기
+        String accessToken = null;
+        String refreshToken = null;
 
+        Cookie[] cookies = request.getCookies();
+        for(Cookie cookie : cookies){
+            if(cookie.getName().equals("accessToken")){
+                accessToken =  cookie.getValue();
+            }
+            else if(cookie.getName().equals("refreshToken")){
+                refreshToken = cookie.getValue();
+            }
+        }
+
+        //2. AccessToken, RefreshToken 만료시킨 후 쿠키에 삽입
+        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                .maxAge(0) //토큰 유효기간(만료)
+                .path("/")
+                .secure(true) //HTTPS 환경에서만 쿠키 발동
+                .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                .httpOnly(false) //JavaScript 접근 가능
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .maxAge(0) //토큰 유효기간(만료)
+                .path("/")
+                .secure(true) //HTTPS 환경에서만 쿠키 발동
+                .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                .httpOnly(true) //JavaScript 접근 가능
+                .build();
+
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+        //3. Redis에서 토큰 제거
+        tokenService.removeToken(user.getId());
     }
 
     @Override

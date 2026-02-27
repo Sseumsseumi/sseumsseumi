@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import static com.inyeon.sseumsseumi.security.exception.AuthErrorCode.LOGIN_FAILED;
 import static com.inyeon.sseumsseumi.user.exception.UserErrorCode.ALREADY_IN_ID;
+import static com.inyeon.sseumsseumi.user.exception.UserErrorCode.NOT_EXISTS_USER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +32,11 @@ public class UserServiceImpl implements UserService {
 
         //DB 저장
         userRepository.save(registUserRequest.toEntity());
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(()->new UserException(NOT_EXISTS_USER));
     }
 
     @Override
