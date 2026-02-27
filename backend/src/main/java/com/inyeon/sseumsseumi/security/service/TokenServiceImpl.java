@@ -1,5 +1,6 @@
 package com.inyeon.sseumsseumi.security.service;
 
+import com.inyeon.sseumsseumi.security.exception.JwtException;
 import com.inyeon.sseumsseumi.security.model.dto.response.TokenResponse;
 import com.inyeon.sseumsseumi.security.model.entity.Token;
 import com.inyeon.sseumsseumi.security.repository.RedisRepository;
@@ -8,6 +9,8 @@ import com.inyeon.sseumsseumi.security.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.inyeon.sseumsseumi.security.exception.JwtErrorCode.NOT_EXISTS_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,7 +36,11 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void removeToken(Long id) {
+        //삭제할 토큰 가져오기
+        Token token = redisRepository.findById(id).orElseThrow(()->new JwtException(NOT_EXISTS_TOKEN));
 
+        //토큰 삭제
+        redisRepository.delete(token);
     }
 
     @Override

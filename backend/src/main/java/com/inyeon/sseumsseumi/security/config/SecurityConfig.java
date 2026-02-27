@@ -1,5 +1,7 @@
 package com.inyeon.sseumsseumi.security.config;
 
+import com.inyeon.sseumsseumi.security.filter.JwtFilter;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -16,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+    private final JwtFilter jwtFilter;
     private static final String[] ALLOWED_URIS={ //접근 허용 whitelist
             "/v1/auth/login",
             "/v1/user/regist",
@@ -45,6 +49,10 @@ public class SecurityConfig {
                         .requestMatchers(ALLOWED_URIS).permitAll() // 특정 경로 인증 미요구
                         .anyRequest().authenticated() // 나머지 경로는 인증 요구
                 );
+
+        //JWT
+        httpSecurity
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

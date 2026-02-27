@@ -2,6 +2,7 @@ package com.inyeon.sseumsseumi.global.handler;
 
 import com.inyeon.sseumsseumi.global.utils.MessageUtils;
 import com.inyeon.sseumsseumi.security.exception.AuthException;
+import com.inyeon.sseumsseumi.security.exception.JwtException;
 import com.inyeon.sseumsseumi.user.exception.UserErrorCode;
 import com.inyeon.sseumsseumi.user.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,25 @@ public class GlobalExceptionHandler {
                         errorCode.getMessage()
                 ));
     }
+
+    /**
+     * Jwt 처리
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<MessageUtils> handleJwtException(JwtException e) {
+        log.warn("JwtException 발생: code={}, message={}",
+                e.getErrorCode().name(), e.getMessage());
+
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(MessageUtils.fail(
+                        e.getErrorCode().name(),
+                        e.getErrorCode().getMessage()
+                ));
+    }
+
 
     /**
      * 예상치 못한 예외 처리
