@@ -1,8 +1,8 @@
 package com.inyeon.sseumsseumi.security.controller;
 
 import com.inyeon.sseumsseumi.global.utils.MessageUtils;
+import com.inyeon.sseumsseumi.security.exception.JwtErrorCode;
 import com.inyeon.sseumsseumi.security.model.dto.request.LoginRequest;
-import com.inyeon.sseumsseumi.security.model.dto.request.RefreshRequest;
 import com.inyeon.sseumsseumi.security.service.interfaces.AuthService;
 import com.inyeon.sseumsseumi.user.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,13 +48,19 @@ public class AuthController {
 
     /**
      * 토큰 재발급
-     * @param refreshRequest
+     * @param request
+     * @param response
      * @return
      */
-    @PostMapping("/refresh")
-    public ResponseEntity<MessageUtils> refresh(@RequestBody RefreshRequest refreshRequest){
-
-
-        return ResponseEntity.ok().body(MessageUtils.success(authService.refresh(refreshRequest)));
+    @GetMapping("/refresh")
+    public ResponseEntity<MessageUtils> refresh(HttpServletRequest request, HttpServletResponse response){
+        if(authService.refresh(request, response)){
+            return ResponseEntity.ok().body(MessageUtils.success());
+        }
+        //리프레쉬 토큰 잘못됐을 경우
+        else {
+            return ResponseEntity.status(JwtErrorCode.NOT_EXISTS_TOKEN.getHttpStatus())
+                    .body(MessageUtils.fail(JwtErrorCode.NOT_EXISTS_TOKEN.getHttpStatus().name(), JwtErrorCode.NOT_EXISTS_TOKEN.getMessage()));
+        }
     }
 }
