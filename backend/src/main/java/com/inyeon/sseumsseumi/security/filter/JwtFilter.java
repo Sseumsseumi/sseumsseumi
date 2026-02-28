@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = createObjectMapper();
     private final UserRepository userRepository;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private static final String[] ALLOWED_URIS={ //접근 허용 whitelist
             "/v1/auth/login",
             "/v1/user/regist",
@@ -80,8 +82,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     }
                 }
             }
-            //2. 토큰 없을 경우 예외
-            if(cookies==null) {
+            //2. 액세스 토큰 없을 경우 예외
+            if(accessToken==null) {
                 throw new JwtException(JwtErrorCode.MISSING_TOKEN);
             }
 

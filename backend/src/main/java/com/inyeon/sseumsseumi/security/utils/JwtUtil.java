@@ -125,19 +125,19 @@ public class JwtUtil {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            log.warn("만료된 AccessToken: {}", e.getMessage());
+            log.warn("만료된 RefreshToken: {}", e.getMessage());
             throw new JwtException(JwtErrorCode.EXPIRED_TOKEN);
         } catch (SignatureException e) {
-            log.warn("잘못된 AccessToken 서명: {}", e.getMessage());
+            log.warn("잘못된 RefreshToken 서명: {}", e.getMessage());
             throw new JwtException(JwtErrorCode.INVALID_SIGNATURE);
         } catch (MalformedJwtException e) {
-            log.warn("손상된 AccessToken: {}", e.getMessage());
+            log.warn("손상된 RefreshToken: {}", e.getMessage());
             throw new JwtException(JwtErrorCode.MALFORMED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.warn("지원하지 않는 AccessToken: {}", e.getMessage());
+            log.warn("지원하지 않는 RefreshToken: {}", e.getMessage());
             throw new JwtException(JwtErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.warn("빈 AccessToken: {}", e.getMessage());
+            log.warn("빈 RefreshToken: {}", e.getMessage());
             throw new JwtException(JwtErrorCode.INVALID_TOKEN_FORMAT);
         }
     }

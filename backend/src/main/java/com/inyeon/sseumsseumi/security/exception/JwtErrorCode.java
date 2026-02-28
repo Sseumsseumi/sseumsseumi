@@ -21,8 +21,6 @@ public enum JwtErrorCode {
     UNSUPPORTED_TOKEN("지원하지 않는 토큰입니다.", UNAUTHORIZED),
     // 잘못된 토큰
     MALFORMED_TOKEN("손상된 토큰입니다.", UNAUTHORIZED),
-    // 블랙리스트 토큰
-    BLACKLISTED_TOKEN("로그아웃된 토큰입니다.", UNAUTHORIZED),
     //없는 토큰
     NOT_EXISTS_TOKEN("유효하지 않은 토큰입니다.", UNAUTHORIZED);
     

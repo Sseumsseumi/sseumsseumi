@@ -1,8 +1,9 @@
 package com.inyeon.sseumsseumi.security.service;
 
 import com.inyeon.sseumsseumi.security.exception.AuthException;
+import com.inyeon.sseumsseumi.security.exception.JwtErrorCode;
+import com.inyeon.sseumsseumi.security.exception.JwtException;
 import com.inyeon.sseumsseumi.security.model.dto.request.LoginRequest;
-import com.inyeon.sseumsseumi.security.model.dto.request.RefreshRequest;
 import com.inyeon.sseumsseumi.security.model.dto.response.TokenResponse;
 import com.inyeon.sseumsseumi.security.service.interfaces.AuthService;
 import com.inyeon.sseumsseumi.security.service.interfaces.TokenService;
@@ -102,7 +103,77 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponse refresh(RefreshRequest refreshRequest) {
-        return null;
+    public boolean refresh(HttpServletRequest request, HttpServletResponse response) {
+        //1. Cookie에서 RefreshToken 가져오기
+        String refreshToken = null;
+
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("refreshToken")) {
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
+
+        // 2. RefreshToken이 없으면 예외
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new JwtException(JwtErrorCode.MISSING_TOKEN);
+        }
+
+        log.debug("Cookie에서 추출한 refreshToken: {}", refreshToken);
+
+        //3. Bearer 접두사 제거
+        if (refreshToken.startsWith("Bearer ") || refreshToken.startsWith("Bearer_")) {
+            refreshToken = refreshToken.substring(7);  // "Bearer " 또는 "Bearer_" 제거
+            log.debug("Bearer 제거 후: {}", refreshToken);
+        }
+
+        //4. RefreshToken 검증하기
+        TokenResponse newToken = tokenService.republishToken(refreshToken);
+
+        if(newToken != null){
+            log.debug("새로운 토큰 : {}", newToken.getRefreshToken());
+        }
+
+        //5-1. 검증 실패 → RefreshToken 만료시킨 후 쿠키에 삽입
+        ResponseCookie accessTokenCookie = null;
+        ResponseCookie refreshTokenCookie = null;
+
+        if(newToken == null){
+            refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .maxAge(0) //토큰 유효기간(만료)
+                    .path("/")
+                    .secure(true) //HTTPS 환경에서만 쿠키 발동
+                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                    .httpOnly(true) //JavaScript 접근 가능
+                    .build();
+
+            response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+            return false;
+        }
+        //5-2. 검증 성공 → 재발급 한 AccessToken, RefreshToken 쿠키에 삽입
+        else {
+            accessTokenCookie = ResponseCookie.from("accessToken", newToken.getAccessToken())
+                    .maxAge(60 * 15) //토큰 유효기간(15분)
+                    .path("/")
+                    .secure(true) //HTTPS 환경에서만 쿠키 발동
+                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                    .httpOnly(false) //JavaScript 접근 가능
+                    .build();
+
+            refreshTokenCookie = ResponseCookie.from("refreshToken", newToken.getRefreshToken())
+                    .maxAge(7 * 24 * 60 * 60) //토큰 유효기간(7일)
+                    .path("/")
+                    .secure(true) //HTTPS 환경에서만 쿠키 발동
+                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                    .httpOnly(true) //JavaScript 접근 가능
+                    .build();
+
+            response.addHeader("Set-Cookie", accessTokenCookie.toString());
+            response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+            return true;
+        }
     }
 }
