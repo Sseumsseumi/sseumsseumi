@@ -37,25 +37,8 @@ public class AuthServiceImpl implements AuthService {
             //2. AccessToken, RefreshToken 생성
             TokenResponse tokenResponse = tokenService.generatedToken(user.getId());
 
-            //3. AccessToken → Cookie
-            ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokenResponse.getAccessToken())
-                    .maxAge(60 * 15) //토큰 유효기간(15분)
-                    .path("/")
-                    .secure(true) //HTTPS 환경에서만 쿠키 발동
-                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
-                    .httpOnly(false) //JavaScript 접근 가능
-                    .build();
-            response.addHeader("Set-Cookie", accessTokenCookie.toString());
-
-            //4. Refresh → Cookie
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokenResponse.getRefreshToken())
-                    .maxAge(7 * 24 * 60 * 60) //토큰 유효기간(7일)
-                    .path("/")
-                    .secure(true) //HTTPS 환경에서만 쿠키 발동
-                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
-                    .httpOnly(true) //JavaScript 접근 차단
-                    .build();
-            response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+            //3. 생성한 AccessToken, RefreshToken 쿠키에 삽입
+            setCookies(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken(), response, 60*15, 7*24*60*60);
 
             return;
         }
@@ -79,24 +62,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         //2. AccessToken, RefreshToken 만료시킨 후 쿠키에 삽입
-        ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
-                .maxAge(0) //토큰 유효기간(만료)
-                .path("/")
-                .secure(true) //HTTPS 환경에서만 쿠키 발동
-                .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
-                .httpOnly(false) //JavaScript 접근 가능
-                .build();
-
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
-                .maxAge(0) //토큰 유효기간(만료)
-                .path("/")
-                .secure(true) //HTTPS 환경에서만 쿠키 발동
-                .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
-                .httpOnly(true) //JavaScript 접근 가능
-                .build();
-
-        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+        setCookies(accessToken, refreshToken, response, 0, 0);
 
         //3. Redis에서 토큰 제거
         tokenService.removeToken(user.getId());
@@ -136,44 +102,43 @@ public class AuthServiceImpl implements AuthService {
         }
 
         //5-1. 검증 실패 → RefreshToken 만료시킨 후 쿠키에 삽입
-        ResponseCookie accessTokenCookie = null;
-        ResponseCookie refreshTokenCookie = null;
-
         if(newToken == null){
-            refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
-                    .maxAge(0) //토큰 유효기간(만료)
-                    .path("/")
-                    .secure(true) //HTTPS 환경에서만 쿠키 발동
-                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
-                    .httpOnly(true) //JavaScript 접근 가능
-                    .build();
-
-            response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+            setCookies(null, refreshToken, response, 0, 0);
 
             return false;
         }
         //5-2. 검증 성공 → 재발급 한 AccessToken, RefreshToken 쿠키에 삽입
         else {
-            accessTokenCookie = ResponseCookie.from("accessToken", newToken.getAccessToken())
-                    .maxAge(60 * 15) //토큰 유효기간(15분)
+            setCookies(newToken.getAccessToken(), newToken.getRefreshToken(), response, 60*15, 7*24*60*60);
+
+            return true;
+        }
+    }
+    
+    //토큰 쿠키에 세팅
+    private void setCookies(String accessToken, String refreshToken, HttpServletResponse response,
+                            long accessTokenMaxAge, long refreshTokenMaxAge) {
+        if(accessToken != null) {
+            ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
+                    .maxAge(accessTokenMaxAge) //토큰 유효기간
                     .path("/")
                     .secure(true) //HTTPS 환경에서만 쿠키 발동
                     .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
                     .httpOnly(false) //JavaScript 접근 가능
                     .build();
 
-            refreshTokenCookie = ResponseCookie.from("refreshToken", newToken.getRefreshToken())
-                    .maxAge(7 * 24 * 60 * 60) //토큰 유효기간(7일)
+            response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        }
+        if(refreshToken != null) {
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .maxAge(refreshTokenMaxAge) //토큰 유효기간
                     .path("/")
                     .secure(true) //HTTPS 환경에서만 쿠키 발동
                     .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
                     .httpOnly(true) //JavaScript 접근 가능
                     .build();
 
-            response.addHeader("Set-Cookie", accessTokenCookie.toString());
             response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-            return true;
         }
     }
 }
