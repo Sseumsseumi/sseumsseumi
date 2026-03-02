@@ -123,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
                     .maxAge(accessTokenMaxAge) //토큰 유효기간
                     .path("/")
                     .secure(true) //HTTPS 환경에서만 쿠키 발동
-                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                    .sameSite("None") //Cross-Site 요청에서 쿠키 전송 됨
                     .httpOnly(false) //JavaScript 접근 가능
                     .build();
 
@@ -134,7 +134,7 @@ public class AuthServiceImpl implements AuthService {
                     .maxAge(refreshTokenMaxAge) //토큰 유효기간
                     .path("/")
                     .secure(true) //HTTPS 환경에서만 쿠키 발동
-                    .sameSite("Strict") //Cross-Site 요청에서 쿠키 전송 안됨
+                    .sameSite("None") //Cross-Site 요청에서 쿠키 전송 됨
                     .httpOnly(true) //JavaScript 접근 가능
                     .build();
 
