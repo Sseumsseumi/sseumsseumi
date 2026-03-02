@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -16,8 +18,10 @@ const Login = () => {
         password,
       });
 
+      localStorage.setItem("isLogin", "true");
+
       console.log("로그인 성공");
-      // TODO: 메인 페이지 이동
+      navigate("/");
     } catch (error: any) {
       const message =
         error?.response?.data?.dataHeader?.resultMessage;
