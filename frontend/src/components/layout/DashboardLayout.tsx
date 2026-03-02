@@ -10,7 +10,7 @@ const DashboardLayout = ({ left, right }: Props) => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1.1fr 0.9fr", // 분석 영역을 약간 더 넓게
+        gridTemplateColumns: "1.1fr 0.9fr",
         gap: "24px",
         height: "100%",
       }}

@@ -18,3 +18,7 @@ export interface LoginRequest {
 export const login = (data: LoginRequest) => {
   return axiosClient.post("/auth/login", data);
 };
+
+export const logout = () => {
+  return axiosClient.get("/auth/logout");
+};

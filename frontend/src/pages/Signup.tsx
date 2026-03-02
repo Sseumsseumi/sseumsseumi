@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -62,7 +64,8 @@ const Signup = () => {
       });
 
       console.log("회원가입 성공", res.data); // Test
-      alert("성공"); // Test
+      alert("성공 다시 로그인해주세요"); // Test
+      navigate("/");
     } catch (error: any) {
       const message =
         error?.response?.data?.dataHeader?.resultMessage;
