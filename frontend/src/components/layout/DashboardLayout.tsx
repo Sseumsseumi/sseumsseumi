@@ -9,25 +9,26 @@ const DashboardLayout = ({ left, right }: Props) => {
   return (
     <div
       style={{
+        maxWidth: "1000px",
+        margin: "0 auto",
         display: "grid",
-        gridTemplateColumns: "1.1fr 0.9fr",
+        gridTemplateColumns: "1.3fr 0.7fr",
         gap: "24px",
-        height: "100%",
+        width: "100%",
       }}
     >
-      {/* 왼쪽: 소비 분석 리포트 */}
+      {/* 가운데: StatisticsDashboard */}
       <section
         style={{
           display: "flex",
           flexDirection: "column",
           gap: "16px",
-          overflowY: "auto",
         }}
       >
         {left}
       </section>
 
-      {/* 오른쪽: 거래 요약 / 리스트 */}
+      {/* 오른쪽: AnalysisDashboard */}
       <section
         style={{
           display: "flex",

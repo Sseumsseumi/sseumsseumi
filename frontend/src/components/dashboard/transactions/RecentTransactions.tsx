@@ -10,7 +10,13 @@ const RecentTransactions = ({ transactions }: Props) => {
   const navigate = useNavigate();
 
   return (
-    <div className="card">
+    <section
+      style={{
+        background: "#ffffff",
+        padding: "20px",
+        borderRadius: "12px",
+      }}
+    >
       <h3>최근 거래 내역</h3>
 
       <TransactionTable transactions={transactions.slice(0, 5)} />
@@ -18,7 +24,7 @@ const RecentTransactions = ({ transactions }: Props) => {
       <button onClick={() => navigate("/transactions")}>
         상세보기
       </button>
-    </div>
+    </section>
   );
 };
 
