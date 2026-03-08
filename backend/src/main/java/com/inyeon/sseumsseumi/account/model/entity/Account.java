@@ -6,7 +6,7 @@ import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name="account")
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "diary_id")
+    @Column(name = "account_id")
     private Long id; //기본키
 
     @ManyToOne
@@ -39,7 +39,7 @@ public class Account {
 
     @Column(name = "account_created_at")
     @NotNull
-    private LocalDateTime createdAt; //신규일자
+    private Timestamp createdAt; //신규일자
 
     @Column(name = "account_balance")
     @ColumnDefault("0")
