@@ -1,15 +1,43 @@
 import type { ReactNode } from "react";
-import Sidebar from "./Sidebar";
 
-interface LayoutProps {
+interface Props {
   children: ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children }: Props) => {
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <Sidebar />
-      <main style={{ flex: 1, padding: "24px", background: "#f9fafb" }}>
+    <div>
+      <header
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          background: "#ffffff",
+          zIndex: 100,
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "20px 0",
+            fontWeight: 700,
+            fontSize: "22px",
+          }}
+        >
+          씀씀이
+        </div>
+      </header>
+
+      <main
+        style={{
+          background: "#F1F1F1",
+          paddingTop: "80px",
+          minHeight: "100vh",
+        }}
+      >
         {children}
       </main>
     </div>

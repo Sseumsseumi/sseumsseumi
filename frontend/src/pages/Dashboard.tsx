@@ -8,8 +8,8 @@ const Dashboard = () => {
   return (
     <Layout>
       <DashboardLayout
-        left={<AnalysisDashboard />}
-        right={<StatisticsDashboard transactions={transactions} />}
+        left={<StatisticsDashboard transactions={transactions} />}
+        right={<AnalysisDashboard />}
       />
     </Layout>
   );

@@ -10,9 +10,9 @@ interface Props {
 const StatisticsDashboard = ({ transactions }: Props) => {
   return (
     <>
+      <RecentTransactions transactions={transactions} />
       <MonthlyTotalSummary transactions={transactions} />
       <CategoryStatsSummary transactions={transactions} />
-      <RecentTransactions transactions={transactions} />
     </>
   );
 };
