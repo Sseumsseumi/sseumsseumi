@@ -2,15 +2,14 @@ package com.inyeon.sseumsseumi.user.controller;
 
 import com.inyeon.sseumsseumi.global.utils.MessageUtils;
 import com.inyeon.sseumsseumi.user.model.dto.request.RegistUserRequest;
+import com.inyeon.sseumsseumi.user.model.entity.User;
 import com.inyeon.sseumsseumi.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,5 +22,10 @@ public class UserController {
     public ResponseEntity<MessageUtils> registUser(@Valid @RequestBody RegistUserRequest registUserRequest){
         userService.registUser(registUserRequest);
         return ResponseEntity.ok().body(MessageUtils.success());
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<MessageUtils> getUserInfo(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok().body(MessageUtils.success(userService.getUserInfo(user)));
     }
 }

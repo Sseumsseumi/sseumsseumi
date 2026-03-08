@@ -3,6 +3,7 @@ package com.inyeon.sseumsseumi.user.service;
 import com.inyeon.sseumsseumi.security.exception.AuthException;
 import com.inyeon.sseumsseumi.user.exception.UserException;
 import com.inyeon.sseumsseumi.user.model.dto.request.RegistUserRequest;
+import com.inyeon.sseumsseumi.user.model.dto.response.GetUserInfoResponse;
 import com.inyeon.sseumsseumi.user.model.entity.User;
 import com.inyeon.sseumsseumi.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,14 @@ public class UserServiceImpl implements UserService {
 
         //DB 저장
         userRepository.save(registUserRequest.toEntity());
+    }
+
+    @Override
+    public GetUserInfoResponse getUserInfo(User user) {
+        return GetUserInfoResponse.builder()
+                .userId(user.getId())
+                .userName(user.getName())
+                .build();
     }
 
     @Override
