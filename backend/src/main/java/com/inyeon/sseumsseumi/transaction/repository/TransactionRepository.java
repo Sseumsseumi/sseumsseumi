@@ -1,8 +1,7 @@
 package com.inyeon.sseumsseumi.transaction.repository;
 
-import com.inyeon.sseumsseumi.statistics.model.dto.response.GetCategoryStatisticsResponse;
+import com.inyeon.sseumsseumi.statistics.model.dto.response.GetCategoryStatisticsProjection;
 import com.inyeon.sseumsseumi.statistics.model.dto.response.GetMonthlyStatisticsProjection;
-import com.inyeon.sseumsseumi.statistics.model.dto.response.GetMonthlyStatisticsResponse;
 import com.inyeon.sseumsseumi.transaction.model.entity.Transaction;
 import com.inyeon.sseumsseumi.user.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,6 +37,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     """)
     List<GetMonthlyStatisticsProjection> getMonthlyStatistics(User user, LocalDate startDate, LocalDate endDate); //월별 소비 통계
 
-
-    //List<GetCategoryStatisticsResponse> getCategoryStatistics(User user, LocalDate startDate, LocalDate endDate); //카테고리별 소비 통계
+    @Query("""
+        SELECT
+            c.id AS categoryId,
+            c.name AS categoryName,
+            SUM(t.withdrawal) AS totalExpenditure
+        FROM Transaction t
+        JOIN t.account a
+        JOIN t.category c
+        WHERE a.user = :user
+        AND t.date BETWEEN :startDate AND :endDate
+        GROUP BY c.id, c.name
+        ORDER BY SUM(t.withdrawal) DESC
+    """)
+    List<GetCategoryStatisticsProjection> getCategoryStatistics(User user, LocalDate startDate, LocalDate endDate); //카테고리별 소비 통계
 }

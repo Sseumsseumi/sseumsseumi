@@ -21,6 +21,13 @@ import java.time.LocalDate;
 public class StatisticsController {
     private final StatisticsService statisticsService;
 
+    /**
+     * 월별 소비 통계
+     * @param user
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @GetMapping("/monthly")
     public ResponseEntity<MessageUtils> getMonthlyStatistics(@AuthenticationPrincipal User user,
                                                              @RequestParam LocalDate startDate,
@@ -28,6 +35,13 @@ public class StatisticsController {
         return ResponseEntity.ok().body(MessageUtils.success(statisticsService.getMonthlyStatistics(user, startDate, endDate)));
     }
 
+    /**
+     * 카테고리별 소비 통계
+     * @param user
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @GetMapping("/category")
     public ResponseEntity<MessageUtils> getCategoryStatistics(@AuthenticationPrincipal User user,
                                                               @RequestParam LocalDate startDate,

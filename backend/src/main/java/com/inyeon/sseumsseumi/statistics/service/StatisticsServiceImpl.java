@@ -31,6 +31,13 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<GetCategoryStatisticsResponse> getCategoryStatistics(User user, LocalDate startDate, LocalDate endDate) {
-        return List.of();
+        return transactionRepository.getCategoryStatistics(user, startDate, endDate)
+                .stream()
+                .map(p->GetCategoryStatisticsResponse.builder()
+                        .categoryId(p.getCategoryId())
+                        .categoryName(p.getCategoryName())
+                        .totalExpenditure(p.getTotalExpenditure())
+                        .build())
+                .toList();
     }
 }
