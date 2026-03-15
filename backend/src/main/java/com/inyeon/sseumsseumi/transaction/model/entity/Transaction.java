@@ -60,5 +60,5 @@ public class Transaction {
 
     @Column(name = "transaction_branch", length = 50)
     @NotNull
-    private Long branch; //거래점
+    private String branch; //거래점
 }
