@@ -1,5 +1,8 @@
 package com.inyeon.sseumsseumi.transaction.repository;
 
+import com.inyeon.sseumsseumi.statistics.model.dto.response.GetCategoryStatisticsResponse;
+import com.inyeon.sseumsseumi.statistics.model.dto.response.GetMonthlyStatisticsProjection;
+import com.inyeon.sseumsseumi.statistics.model.dto.response.GetMonthlyStatisticsResponse;
 import com.inyeon.sseumsseumi.transaction.model.entity.Transaction;
 import com.inyeon.sseumsseumi.user.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +22,22 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             AND t.date BETWEEN :startDate AND :endDate
             ORDER BY t.date DESC, t.time DESC
             """)
-    List<Transaction> findUserTransactionsByDateRange(User user, LocalDate startDate, LocalDate endDate);
+    List<Transaction> findUserTransactionsByDateRange(User user, LocalDate startDate, LocalDate endDate); //사용자별 전체 계좌 거래 내역 조회
+
+    @Query("""
+        SELECT 
+            FUNCTION('DATE_FORMAT', t.date, '%Y-%m') AS month,
+            SUM(t.deposit) AS totalIncome,
+            SUM(t.withdrawal) AS totalExpenditure
+        FROM Transaction t
+        JOIN t.account a
+        WHERE a.user = :user
+        AND t.date BETWEEN :startDate AND :endDate
+        GROUP BY FUNCTION('DATE_FORMAT', t.date, '%Y-%m')
+        ORDER BY FUNCTION('DATE_FORMAT', t.date, '%Y-%m')
+    """)
+    List<GetMonthlyStatisticsProjection> getMonthlyStatistics(User user, LocalDate startDate, LocalDate endDate); //월별 소비 통계
+
+
+    //List<GetCategoryStatisticsResponse> getCategoryStatistics(User user, LocalDate startDate, LocalDate endDate); //카테고리별 소비 통계
 }
