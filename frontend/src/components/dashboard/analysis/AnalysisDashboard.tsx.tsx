@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import AuthSection from "../../auth/AuthSection";
+import AuthSection from "../../user/AuthSection";
 import SummarySection from "./SummarySection";
+import AccountSection from "../../user/AccountSection";
 
 const LeftDashboard = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -23,7 +24,12 @@ const LeftDashboard = () => {
     >
       <AuthSection />
 
-      {isLogin && <SummarySection />}
+      {isLogin && (
+        <>
+          <SummarySection />
+          <AccountSection />
+        </>
+      )}
     </section>
   );
 };
