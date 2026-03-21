@@ -11,25 +11,9 @@ const AccountSection = () => {
       accountCreatedAt: "2023-03-20 05:45:00",
       accountBalance: 1200000,
     },
-    {
-      accountId: 14,
-      accountBankName: "하나은행",
-      accountName: "적금 통장",
-      accountNumber: "356-910203-445",
-      accountCreatedAt: "2022-06-05 07:30:00",
-      accountBalance: 5000000,
-    },
-    {
-      accountId: 15,
-      accountBankName: "카카오뱅크",
-      accountName: "생활비 통장",
-      accountNumber: "3333-02-1234567",
-      accountCreatedAt: "2023-07-31 23:00:00",
-      accountBalance: 950000,
-    },
   ]);
 
-  /*
+  
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -42,7 +26,7 @@ const AccountSection = () => {
 
     fetchAccounts();
   }, []);
-  */
+  
 
   return (
     <div>
