@@ -1,40 +1,24 @@
-import type { Transaction } from "../../../types/transaction";
+import type { MonthlyStatistics } from "../../../api/statistics";
 
 interface Props {
-  transactions: Transaction[];
+  data: MonthlyStatistics[];
 }
 
-const MonthlyExpenseBarChart = ({ transactions }: Props) => {
-  const now = new Date();
+const MonthlyExpenseBarChart = ({ data }: Props) => {
+  // 최근 4개월만 사용
+  const monthlyTotals = data.slice(-4).map((m) => ({
+    label: `${Number(m.month.split("-")[1])}월`,
+    income: m.totalIncome,
+    expenditure: m.totalExpenditure,
+  }));
 
-  const monthlyTotals = Array.from({ length: 5 }).map((_, index) => {
-    const date = new Date(
-      now.getFullYear(),
-      now.getMonth() - (4 - index),
-      1
-    );
-
-    const year = date.getFullYear();
-    const month = date.getMonth();
-
-    const total = transactions
-      .filter((tx) => {
-        if (tx.type !== "OUT") return false;
-        const txDate = new Date(tx.date);
-        return (
-          txDate.getFullYear() === year &&
-          txDate.getMonth() === month
-        );
-      })
-      .reduce((sum, tx) => sum + tx.amount, 0);
-
-    return {
-      label: `${month + 1}월`,
-      total,
-    };
-  });
-
-  const maxValue = Math.max(...monthlyTotals.map((m) => m.total), 1);
+  const maxValue = Math.max(
+    ...monthlyTotals.flatMap((m) => [
+      m.income,
+      m.expenditure,
+    ]),
+    1
+  );
 
   return (
     <div
@@ -46,7 +30,8 @@ const MonthlyExpenseBarChart = ({ transactions }: Props) => {
       }}
     >
       {monthlyTotals.map((month, index) => {
-        const isCurrentMonth = index === monthlyTotals.length - 1;
+        const isCurrentMonth =
+          index === monthlyTotals.length - 1;
 
         return (
           <div
@@ -56,19 +41,38 @@ const MonthlyExpenseBarChart = ({ transactions }: Props) => {
               textAlign: "center",
             }}
           >
-            {/* 막대 기준 컨테이너 */}
+            {/* 막대 영역 */}
             <div
               style={{
-                height: "120px",
+                height: "140px",
                 display: "flex",
                 alignItems: "flex-end",
                 justifyContent: "center",
+                gap: "6px",
               }}
             >
+              {/* 수입 */}
               <div
                 style={{
-                  width: "100%",
-                  height: `${(month.total / maxValue) * 100}%`,
+                  width: "40%",
+                  height: `${
+                    (month.income / maxValue) * 100
+                  }%`,
+                  backgroundColor: isCurrentMonth
+                    ? "#60A5FA"
+                    : "#DBEAFE",
+                  borderRadius: "6px 6px 0 0",
+                  transition: "height 0.3s",
+                }}
+              />
+
+              {/* 지출 */}
+              <div
+                style={{
+                  width: "40%",
+                  height: `${
+                    (month.expenditure / maxValue) * 100
+                  }%`,
                   backgroundColor: isCurrentMonth
                     ? "#FFA240"
                     : "#E5E7EB",
@@ -78,11 +82,26 @@ const MonthlyExpenseBarChart = ({ transactions }: Props) => {
               />
             </div>
 
-            <p style={{ marginTop: "8px", fontSize: "12px" }}>
+            {/* 월 */}
+            <p
+              style={{
+                marginTop: "8px",
+                fontSize: "12px",
+              }}
+            >
               {month.label}
             </p>
-            <p style={{ fontSize: "11px", color: "#6b7280" }}>
-              {month.total.toLocaleString()}원
+
+            {/* 금액 */}
+            <p
+              style={{
+                fontSize: "11px",
+                color: "#6b7280",
+              }}
+            >
+              ↑ {month.income.toLocaleString()}
+              <br />
+              ↓ {month.expenditure.toLocaleString()}
             </p>
           </div>
         );
