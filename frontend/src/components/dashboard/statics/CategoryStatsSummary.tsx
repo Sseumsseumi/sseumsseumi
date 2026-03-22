@@ -1,29 +1,88 @@
-import type { Transaction } from "../../../types/transaction";
-import { getMonthlyCategoryTotals } from "../../../utils/categoryStats";
+import { useEffect, useState } from "react";
+import {
+  getCategoryStatistics,
+  type CategoryStatistics,
+} from "../../../api/statistics";
 
 interface Props {
-  transactions: Transaction[];
   year?: number;
   month?: number;
 }
 
-const COLORS = ["#F26076", "#FF9760", "#FFD150"];
+const COLORS = ["#F26076", "#FF9760", "#FFD150", "#60A5FA", "#34D399"];
 
-const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
+const CategoryStatsSummary = ({ year, month }: Props) => {
   const resolvedYear = year ?? new Date().getFullYear();
   const resolvedMonth = month ?? new Date().getMonth() + 1;
 
-  const totals = getMonthlyCategoryTotals(
-    transactions,
-    resolvedYear,
-    resolvedMonth
+  const [data, setData] = useState<CategoryStatistics[]>([{
+            "categoryId": 3,
+            "categoryName": "쇼핑",
+            "totalExpenditure": 1578145
+        },
+        {
+            "categoryId": 4,
+            "categoryName": "교통",
+            "totalExpenditure": 1354396
+        },
+        {
+            "categoryId": 8,
+            "categoryName": "교육",
+            "totalExpenditure": 1289144
+        },
+        {
+            "categoryId": 9,
+            "categoryName": "기타",
+            "totalExpenditure": 1021136
+        },
+        {
+            "categoryId": 6,
+            "categoryName": "의료",
+            "totalExpenditure": 1016608
+        }]);
+  //const [loading, setLoading] = useState(true);
+
+  // YYYY-MM-DD 생성
+  const getMonthRange = () => {
+    const start = new Date(resolvedYear, resolvedMonth - 1, 1);
+    const end = new Date(resolvedYear, resolvedMonth, 0);
+
+    const format = (d: Date) =>
+      d.toISOString().slice(0, 10);
+
+    return {
+      startDate: format(start),
+      endDate: format(end),
+    };
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { startDate, endDate } = getMonthRange();
+
+        const result = await getCategoryStatistics(
+          startDate,
+          endDate
+        );
+
+        setData(result);
+      } catch (e) {
+        console.error("카테고리 통계 조회 실패", e);
+      }
+    };
+
+    fetchData();
+  }, [resolvedYear, resolvedMonth]);
+
+  const entries = [...data].sort(
+    (a, b) => b.totalExpenditure - a.totalExpenditure
   );
 
-  const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-
-  const top3 = entries.slice(0, 3);
-
-  const totalAmount = entries.reduce((sum, [, amount]) => sum + amount, 0);
+  const totalAmount = entries.reduce(
+    (sum, item) => sum + item.totalExpenditure,
+    0
+  );
 
   return (
     <section
@@ -33,20 +92,25 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
         borderRadius: "12px",
       }}
     >
-      <h3>{resolvedMonth}월 카테고리별 지출 TOP 3</h3>
+      <h3>{resolvedMonth}월 카테고리별 지출</h3>
 
-      {top3.length === 0 ? (
+      {entries.length === 0 ? (
         <p style={{ color: "#6b7280", marginTop: "12px" }}>
           이번 달 지출 내역이 없습니다.
         </p>
       ) : (
         <div style={{ marginTop: "16px" }}>
-          {top3.map(([category, amount], index) => {
+          {entries.map((item, index) => {
             const percentage =
-              totalAmount === 0 ? 0 : (amount / totalAmount) * 100;
+              totalAmount === 0
+                ? 0
+                : (item.totalExpenditure / totalAmount) * 100;
 
             return (
-              <div key={category} style={{ marginBottom: "14px" }}>
+              <div
+                key={item.categoryId}
+                style={{ marginBottom: "14px" }}
+              >
                 {/* 라벨 */}
                 <div
                   style={{
@@ -56,14 +120,14 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
                     fontSize: "14px",
                   }}
                 >
-                  <span>{category}</span>
+                  <span>{item.categoryName}</span>
                   <span>
-                    {amount.toLocaleString()}원 ·{" "}
+                    {item.totalExpenditure.toLocaleString()}원 ·{" "}
                     {percentage.toFixed(1)}%
                   </span>
                 </div>
 
-                {/* 가로 막대 */}
+                {/* 막대 */}
                 <div
                   style={{
                     width: "100%",
@@ -77,7 +141,8 @@ const CategoryStatsSummary = ({ transactions, year, month }: Props) => {
                     style={{
                       width: `${percentage}%`,
                       height: "100%",
-                      backgroundColor: COLORS[index] ?? "#E5E7EB",
+                      backgroundColor:
+                        COLORS[index % COLORS.length],
                       borderRadius: "6px",
                       transition: "width 0.3s",
                     }}
