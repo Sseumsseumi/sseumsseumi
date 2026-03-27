@@ -31,8 +31,8 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/v3/api-docs/**",
             //health check
-            "/actuator",
             "/api/",
+            "/actuator/**"
     };
 
     @Bean
