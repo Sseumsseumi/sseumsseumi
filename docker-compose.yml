@@ -32,6 +32,7 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - JWT_ACCESS=${JWT_ACCESS}
       - JWT_REFRESH=${JWT_REFRESH}
+      - JAVA_TOOL_OPTIONS=-XX:-UseContainerSupport
     ports:
       - "8080:8080"
     depends_on:

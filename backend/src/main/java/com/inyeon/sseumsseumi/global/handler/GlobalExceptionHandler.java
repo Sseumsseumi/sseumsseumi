@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -91,6 +92,16 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    /**
+     * 정적 리소스 예외 처리
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException e) {
+        // 정적 리소스 요청은 그냥 404만 반환
+        return ResponseEntity.notFound().build();
+    }
 
     /**
      * 예상치 못한 예외 처리
