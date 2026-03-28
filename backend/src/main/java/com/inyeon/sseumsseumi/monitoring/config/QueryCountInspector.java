@@ -9,6 +9,7 @@ public class QueryCountInspector implements StatementInspector {
         // HTTP 요청 컨텍스트
         RequestContext requestContext = RequestContextHolder.getContext();
         if (requestContext != null) {
+            //쿼리 카운트
             requestContext.incrementQueryCount(sql);
         }
 
