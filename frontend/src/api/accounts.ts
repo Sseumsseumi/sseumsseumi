@@ -10,5 +10,5 @@ export interface Account {
 }
 
 export const getAccounts = () => {
-  return axiosClient.get("/accounts");
+  return axiosClient.get("/api/v1/accounts");
 };

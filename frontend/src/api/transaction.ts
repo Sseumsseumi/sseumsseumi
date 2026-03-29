@@ -15,7 +15,7 @@ export const getTransactions = async (
   startDate: string,
   endDate: string
 ) => {
-  const res = await axiosClient.get("/transactions", {
+  const res = await axiosClient.get("/api/v1/transactions", {
     params: {
       startDate,
       endDate,

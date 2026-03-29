@@ -7,7 +7,7 @@ export interface SignupRequest {
 }
 
 export const signup = (data: SignupRequest) => {
-  return axiosClient.post("/user/regist", data);
+  return axiosClient.post("/api/v1/user/regist", data);
 };
 
 export interface LoginRequest {
@@ -16,9 +16,9 @@ export interface LoginRequest {
 }
 
 export const login = (data: LoginRequest) => {
-  return axiosClient.post("/auth/login", data);
+  return axiosClient.post("/api/v1/auth/login", data);
 };
 
 export const logout = () => {
-  return axiosClient.get("/auth/logout");
+  return axiosClient.get("/api/v1/auth/logout");
 };
