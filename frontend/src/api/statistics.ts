@@ -16,7 +16,7 @@ export const getMonthlyStatistics = async (
   startDate: string,
   endDate: string
 ): Promise<MonthlyStatistics[]> => {
-  const res = await axiosClient.get("/statistics/monthly", {
+  const res = await axiosClient.get("/api/v1/statistics/monthly", {
     params: { startDate, endDate },
   });
 
@@ -27,7 +27,7 @@ export const getCategoryStatistics = async (
   startDate: string,
   endDate: string
 ) => {
-  const res = await axiosClient.get("/statistics/category", {
+  const res = await axiosClient.get("/api/v1/statistics/category", {
     params: {
       startDate,
       endDate,

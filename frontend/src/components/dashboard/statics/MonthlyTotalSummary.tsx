@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useAtomValue } from "jotai";
+import { userAtom } from "../../../store/authAtom";
 import MonthlyExpenseBarChart from "../chart/MonthlyExpenseBarChart";
 import {
   getMonthlyStatistics,
@@ -19,44 +21,54 @@ const getLast4MonthsRange = () => {
   return { startDate, endDate };
 };
 
+const dummyStats: MonthlyStatistics[] = [
+  {
+    month: "2025-11",
+    totalIncome: 12719578,
+    totalExpenditure: 1806840,
+  },
+  {
+    month: "2025-12",
+    totalIncome: 12826538,
+    totalExpenditure: 2488318,
+  },
+  {
+    month: "2026-01",
+    totalIncome: 11771336,
+    totalExpenditure: 1761112,
+  },
+  {
+    month: "2026-02",
+    totalIncome: 10422794,
+    totalExpenditure: 2033946,
+  },
+  {
+    month: "2026-03",
+    totalIncome: 5778369,
+    totalExpenditure: 1260643,
+  },
+];
+
 const MonthlyTotalSummary = () => {
-  const [stats, setStats] = useState<MonthlyStatistics[]>([{
-            "month": "2025-11",
-            "totalIncome": 12719578,
-            "totalExpenditure": 1806840
-        },
-        {
-            "month": "2025-12",
-            "totalIncome": 12826538,
-            "totalExpenditure": 2488318
-        },
-        {
-            "month": "2026-01",
-            "totalIncome": 11771336,
-            "totalExpenditure": 1761112
-        },
-        {
-            "month": "2026-02",
-            "totalIncome": 10422794,
-            "totalExpenditure": 2033946
-        },
-        {
-            "month": "2026-03",
-            "totalIncome": 5778369,
-            "totalExpenditure": 1260643
-        }]);
+  const user = useAtomValue(userAtom);
+
+  const [stats, setStats] =
+    useState<MonthlyStatistics[]>(dummyStats);
 
   useEffect(() => {
+    // 로그인 안하면 API 호출 X
+    if (!user) return;
+
     const fetchStats = async () => {
       try {
-        const { startDate, endDate } = getLast4MonthsRange();
+        const { startDate, endDate } =
+          getLast4MonthsRange();
 
         const data = await getMonthlyStatistics(
           startDate,
           endDate
         );
 
-        // 최근 4개월만
         setStats(data.slice(-4));
       } catch (e) {
         console.error("월별 통계 조회 실패", e);
@@ -64,7 +76,7 @@ const MonthlyTotalSummary = () => {
     };
 
     fetchStats();
-  }, []);
+  }, [user]);
 
   if (!stats.length) return null;
 
@@ -86,9 +98,11 @@ const MonthlyTotalSummary = () => {
   return (
     <section
       style={{
+        position: "relative",
         background: "#ffffff",
         padding: "20px",
         borderRadius: "12px",
+        overflow: "hidden",
       }}
     >
       <h3>월별 소비 통계</h3>
@@ -116,6 +130,26 @@ const MonthlyTotalSummary = () => {
       </p>
 
       <MonthlyExpenseBarChart data={stats} />
+
+      {/* 로그인 안했을 때 잠금 */}
+      {!user && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.55)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#fff",
+            fontWeight: 600,
+            fontSize: "18px",
+            backdropFilter: "blur(2px)",
+          }}
+        >
+          🔒 로그인 후 확인할 수 있습니다
+        </div>
+      )}
     </section>
   );
 };

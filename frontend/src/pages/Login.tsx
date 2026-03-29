@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axiosClient from "../api/axiosClient";
+import { useSetAtom } from "jotai";
+import { userAtom } from "../store/authAtom";
+import { login, getUserInfo } from "../api/auth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const setUser = useSetAtom(userAtom);
+
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -13,25 +17,26 @@ const Login = () => {
     setLoginError("");
 
     try {
-      await axiosClient.post("/auth/login", {
+      await login({
         id: userId,
         password,
       });
 
-      localStorage.setItem("isLogin", "true");
+      const user = await getUserInfo();
 
-      console.log("로그인 성공");
+      setUser({
+        userId: user.userId,
+        userName: user.userName,
+      });
+
       navigate("/");
     } catch (error: any) {
       const message =
         error?.response?.data?.dataHeader?.resultMessage;
 
-      if (message) {
-        setLoginError(message);
-      } else {
-        setLoginError("로그인 중 오류가 발생했습니다.");
-        console.error(error);
-      }
+      setLoginError(
+        message ?? "로그인 중 오류가 발생했습니다."
+      );
     }
   };
 
@@ -79,9 +84,7 @@ const Login = () => {
           style={inputStyle}
         />
 
-        {loginError && (
-          <p style={errorStyle}>{loginError}</p>
-        )}
+        {loginError && <p style={errorStyle}>{loginError}</p>}
 
         <button
           type="submit"

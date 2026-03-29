@@ -1,29 +1,22 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { userAtom } from "../../store/authAtom";
 import { logout } from "../../api/auth";
 
 const AuthSection = () => {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(false);
-
-  useEffect(() => {
-    const loginState = localStorage.getItem("isLogin");
-    setIsLogin(loginState === "true");
-  }, []);
+  const [user, setUser] = useAtom(userAtom);
 
   const handleLogout = async () => {
     try {
       await logout();
-    } catch {
-      console.warn("로그아웃 API 실패 또는 토큰 없음");
     } finally {
-      localStorage.removeItem("isLogin");
-      setIsLogin(false);
+      setUser(null); // 로그인 상태 제거
       navigate("/");
     }
   };
 
-  if (!isLogin) {
+  if (!user) {
     return (
       <section
         style={{
@@ -31,6 +24,7 @@ const AuthSection = () => {
           borderRadius: "12px",
           display: "flex",
           gap: "10px",
+          padding: "15px"
         }}
       >
         <NavLink to="/login" style={loginBtn}>
@@ -55,16 +49,20 @@ const AuthSection = () => {
         marginBottom: "15px",
       }}
     >
-    <div
-    style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "6px",
-    }}
-    >
-        <div style={{ fontWeight: 600, fontSize: "16px" }}>김씀씀</div>
-        <div style={{ fontSize: "14px", color: "#666" }}>kimss01</div>
-    </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "6px",
+        }}
+      >
+        <div style={{ fontWeight: 600, fontSize: "16px" }}>
+          {user.userName}
+        </div>
+        <div style={{ fontSize: "14px", color: "#666" }}>
+          {user.userId}
+        </div>
+      </div>
 
       <button onClick={handleLogout} style={logoutBtn}>
         로그아웃
