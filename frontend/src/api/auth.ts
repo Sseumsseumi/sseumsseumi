@@ -22,3 +22,14 @@ export const login = (data: LoginRequest) => {
 export const logout = () => {
   return axiosClient.get("/api/v1/auth/logout");
 };
+
+export interface UserInfo {
+  userId: number;
+  userName: string;
+}
+
+export const getUserInfo = async (): Promise<UserInfo> => {
+  const res = await axiosClient.get("/api/v1/user/info");
+
+  return res.data.dataBody;
+};
