@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @Getter
 public class GetUserInfoResponse {
-    private Long userId;
+    private String userLoginId;
     private String userName;
 }
