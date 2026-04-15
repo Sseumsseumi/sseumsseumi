@@ -24,7 +24,7 @@ export const logout = () => {
 };
 
 export interface UserInfo {
-  userId: number;
+  userLoginId: string;
   userName: string;
 }
 

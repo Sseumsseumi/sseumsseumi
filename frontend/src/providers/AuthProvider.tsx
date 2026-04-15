@@ -13,7 +13,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const user = await getUserInfo();
 
         setUser({
-          userId: user.userId,
+          userLoginId: user.userLoginId,
           userName: user.userName,
         });
       } catch {

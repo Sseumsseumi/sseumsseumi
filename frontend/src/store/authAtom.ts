@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 
 export type User = {
-  userId: number;
+  userLoginId: string;
   userName: string;
 };
 
