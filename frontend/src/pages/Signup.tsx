@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
-//
+
 const Signup = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
