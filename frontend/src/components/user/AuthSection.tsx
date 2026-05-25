@@ -60,7 +60,7 @@ const AuthSection = () => {
           {user.userName}
         </div>
         <div style={{ fontSize: "14px", color: "#666" }}>
-          {user.userId}
+          {user.userLoginId}
         </div>
       </div>
 
