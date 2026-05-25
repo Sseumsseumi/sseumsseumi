@@ -57,7 +57,7 @@ const Signup = () => {
     if (!isUserIdValid || !isPasswordValid) return;
 
     try {
-      const res = await axiosClient.post("user/regist", {
+      const res = await axiosClient.post("/api/v1/user/regist", {
         id: userId,
         password,
         name,
