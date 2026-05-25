@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
-
+//
 const Signup = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -57,7 +57,7 @@ const Signup = () => {
     if (!isUserIdValid || !isPasswordValid) return;
 
     try {
-      const res = await axiosClient.post("user/regist", {
+      const res = await axiosClient.post("/api/v1/user/regist", {
         id: userId,
         password,
         name,
