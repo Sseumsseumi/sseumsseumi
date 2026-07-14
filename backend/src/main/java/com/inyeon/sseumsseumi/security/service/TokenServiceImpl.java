@@ -72,6 +72,8 @@ public class TokenServiceImpl implements TokenService {
                 return newToken;
             }
             else {
+                //redis에서 RefreshToken 무효화 처리
+                removeToken(id);
                 return null;
             }
         }
