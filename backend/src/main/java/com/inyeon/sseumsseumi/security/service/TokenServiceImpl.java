@@ -80,4 +80,5 @@ public class TokenServiceImpl implements TokenService {
         //검증 안될 경우 예외 처리
         throw new JwtException(JwtErrorCode.NOT_EXISTS_TOKEN);
     }
+
 }
